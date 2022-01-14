@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 20200998 - ECS - Stack for ECR Repositories.
+Resources:
+  DevECRRepo:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: dev-coinbase-ecr-repository
+  QaECRRepo:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: qa-coinbase-ecr-repository
+  ProdECRRepo:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: prod-coinbase-ecr-repository
