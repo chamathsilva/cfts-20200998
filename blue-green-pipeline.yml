@@ -1,0 +1,280 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 20200998 - CI/CD - Stack for DEV QA Prod(Blue/green) codepipeline
+Parameters:
+  ArtifactStoreS3bucket:
+    Description: artifact store bucket for pipeline
+    Default: codepipeline-eu-west-2-505871139202
+    Type: String
+  GithubConnectionArn:
+    Description : CodeStar source connection for Github (Version 2) 
+    Default: arn:aws:codestar-connections:eu-west-2:362392363900:connection/8905a9d2-6c76-415e-a884-9d1fae385256
+    Type: String
+  RepositoryId: 
+    Description : The owner and name of the repository where source changes are to be detected (<account>/<repository-name>)
+    Type: String
+    Default : chamathsilva/coinbase-20200998
+  BranchName:
+    Description : The name of the branch where source changes are to be detected
+    Type: String
+    Default : main
+  CodePipelineRole:
+    Description : ARN of the CodePipeline Role
+    Type: String
+    Default: arn:aws:iam::362392363900:role/service-role/test-bff-pipeline-role
+  CodeBuildRole:
+    Description : ARN of the CodeBuildRole Role
+    Type: String
+    Default: arn:aws:iam::362392363900:role/CodeBuildKubectlRole
+
+Resources:
+  CodeBuild:
+    Type: "AWS::CodeBuild::Project"
+    Properties:
+      Name: !Sub ${AWS::StackName}-dev-codebuild
+      Description: !Sub ${AWS::StackName}-dev-codebuild
+      ServiceRole: !Ref CodeBuildRole
+      Artifacts:
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 10
+      Cache:
+        Type: LOCAL
+        Modes: 
+          - LOCAL_CUSTOM_CACHE
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: buildspec.yml
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:5.0
+        PrivilegedMode: true
+  DevCodeDeploy:
+    Type: "AWS::CodeBuild::Project"
+    Properties:
+      Name: !Sub ${AWS::StackName}-dev-codedeploy
+      Description: !Sub ${AWS::StackName}-dev-codedeploy
+      ServiceRole: !Ref CodeBuildRole
+      Artifacts:
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 10
+      Cache:
+        Type: LOCAL
+        Modes: 
+          - LOCAL_CUSTOM_CACHE
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: buildspec-deploy.yml
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:5.0
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: ENV
+            Value: 'dev'
+          - Name: NAMESPACE
+            Value: 'dev-coinbase-namespace'
+  QaCodeDeploy:
+    Type: "AWS::CodeBuild::Project"
+    Properties:
+      Name: !Sub ${AWS::StackName}-qa-codedeploy
+      Description: !Sub ${AWS::StackName}-qa-codedeploy
+      ServiceRole: !Ref CodeBuildRole
+      Artifacts:
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 10
+      Cache:
+        Type: LOCAL
+        Modes: 
+          - LOCAL_CUSTOM_CACHE
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: buildspec-deploy.yml
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:5.0
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: ENV
+            Value: 'qa'
+          - Name: NAMESPACE
+            Value: 'qa-coinbase-namespace'
+  GreenCodeDeploy:
+    Type: "AWS::CodeBuild::Project"
+    Properties:
+      Name: !Sub ${AWS::StackName}-green-codedeploy
+      Description: !Sub ${AWS::StackName}-green-codedeploy
+      ServiceRole: !Ref CodeBuildRole
+      Artifacts:
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 10
+      Cache:
+        Type: LOCAL
+        Modes: 
+          - LOCAL_CUSTOM_CACHE
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: buildspec-deploy.yml
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:5.0
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: ENV
+            Value: 'green'
+          - Name: NAMESPACE
+            Value: 'prod-coinbase-namespace'
+  BlueGreenSwapCodeDeploy:
+    Type: "AWS::CodeBuild::Project"
+    Properties:
+      Name: !Sub ${AWS::StackName}-blue-green-swap-codedeploy
+      Description: !Sub ${AWS::StackName}-blue-green-swap-codedeploy
+      ServiceRole: !Ref CodeBuildRole
+      Artifacts:
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 10
+      Cache:
+        Type: LOCAL
+        Modes: 
+          - LOCAL_CUSTOM_CACHE
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: buildspec-blue-green-swap.yml
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:5.0
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: ENV
+            Value: 'blue'
+          - Name: NAMESPACE
+            Value: 'prod-coinbase-namespace'
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: !Sub ${AWS::StackName}
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactStoreS3bucket
+      RoleArn: !Ref CodePipelineRole
+      Stages:
+        - Name : Source
+          Actions:
+            - Name : source-action
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Version: 1
+                Provider: CodeStarSourceConnection
+              OutputArtifacts:
+                - Name: !Sub ${AWS::StackName}-source-artifact
+              Configuration:
+                ConnectionArn: !Ref GithubConnectionArn
+                FullRepositoryId: !Ref RepositoryId
+                BranchName: !Ref BranchName
+                DetectChanges: false # todo update
+              RunOrder: 1
+        - Name : Build
+          Actions:
+            - Name : build-and-push-to-dev-ecr
+              InputArtifacts:
+                - Name: !Sub ${AWS::StackName}-source-artifact
+              OutputArtifacts:
+                - Name: !Sub ${AWS::StackName}-dev-build-artifact
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref CodeBuild
+              RunOrder: 1
+        - Name : DEV-deployment
+          Actions:
+            - Name : dev-deployment
+              InputArtifacts:
+                - Name: !Sub ${AWS::StackName}-dev-build-artifact
+              OutputArtifacts:
+                - Name: !Sub ${AWS::StackName}-dev-deploy-artifact
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref DevCodeDeploy
+              RunOrder: 1
+        - Name : QA-deployment
+          Actions:
+            - Name : qa-deployment
+              InputArtifacts:
+                - Name: !Sub ${AWS::StackName}-dev-build-artifact
+              OutputArtifacts:
+                - Name: !Sub ${AWS::StackName}-qa-deploy-artifact
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref QaCodeDeploy
+              RunOrder: 1
+        - Name: Green-deployment-approval
+          Actions:
+            - Name : green-deployment-approval
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Version: 1
+                Provider: Manual
+              RunOrder: 1
+        - Name : Green-deployment
+          Actions:
+            - Name : green-deployment
+              InputArtifacts:
+                - Name: !Sub ${AWS::StackName}-dev-build-artifact
+              OutputArtifacts:
+                - Name: !Sub ${AWS::StackName}-green-deploy-artifact
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref GreenCodeDeploy
+              RunOrder: 1
+        - Name: Blue-green-swap-approval
+          Actions:
+            - Name : blue-green-swap-approval
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Version: 1
+                Provider: Manual
+              RunOrder: 1
+        - Name : Blue-green-swap-deployment
+          Actions:
+            - Name : blue-green-swap-deployment
+              InputArtifacts:
+                - Name: !Sub ${AWS::StackName}-dev-build-artifact
+              OutputArtifacts:
+                - Name: !Sub ${AWS::StackName}-blue-green-swap-deploy-artifact
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref BlueGreenSwapCodeDeploy
+              RunOrder: 1
+
+
+
+
+
+
+
+
