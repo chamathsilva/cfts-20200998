@@ -1,0 +1,216 @@
+{
+	"info": {
+		"_postman_id": "3402ef64-1716-4a4a-9c49-e69795c4bbb1",
+		"name": "Coinbase",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ExchangeRate",
+			"item": [
+				{
+					"name": "Get Exchange Rates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/coinbase-service/exchange-rate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"coinbase-service",
+								"exchange-rate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Exchange Rates",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"coin\": \"LTC\",\n    \"value\": 963.256\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/coinbase-service/exchange-rate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"coinbase-service",
+								"exchange-rate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transaction",
+			"item": [
+				{
+					"name": "Get transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/coinbase-service/transaction",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"coinbase-service",
+								"transaction"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"coin\": \"LTC\",\n    \"amount\": 963.256,\n    \"user_id\" : 50,\n    \"type\" : \"SELL\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/coinbase-service/transaction",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"coinbase-service",
+								"transaction"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "health-check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/coinbase-service/health-check",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"coinbase-service",
+						"health-check"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "root",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "blue-prod",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "k8s-prodcoin-bluecoin-f1a16468d2-1079680089.eu-west-2.elb.amazonaws.com/coinbase-service/health-check",
+					"host": [
+						"k8s-prodcoin-bluecoin-f1a16468d2-1079680089",
+						"eu-west-2",
+						"elb",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"coinbase-service",
+						"health-check"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "green-stage",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "k8s-prodcoin-greencoi-58f566435e-1856870615.eu-west-2.elb.amazonaws.com/coinbase-service/health-check",
+					"host": [
+						"k8s-prodcoin-greencoi-58f566435e-1856870615",
+						"eu-west-2",
+						"elb",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"coinbase-service",
+						"health-check"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -12,5 +12,6 @@ kubectl get services -n dev-coinbase-namespace
 kubectl get pods -n dev-coinbase-namespace
 
 
-kubectl -n dev-coinbase-namespace logs dev-coinbase-pod-deployment-785dc7dc56-dnnl7
+kubectl -n dev-coinbase-namespace logs dev-coinbase-pod-deployment-559884cf6c-4kr8w
 
+# kubectl delete namespaces qa-coinbase-namespace
