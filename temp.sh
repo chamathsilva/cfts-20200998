@@ -12,14 +12,5 @@ kubectl get services -n dev-coinbase-namespace
 kubectl get pods -n dev-coinbase-namespace
 
 
-kubectl -n dev-coinbase-namespace logs dev-coinbase-pod-deployment-54479dfdd5-2mt7m 
+kubectl -n dev-coinbase-namespace logs dev-coinbase-pod-deployment-785dc7dc56-dnnl7
 
-
-eksctl delete cluster --name coinbase-cluster --region us-east-1
-
-eksctl create iamidentitymapping --cluster coinbase-cluster --arn arn:aws:iam::036710734874:user/admin-chamath --group  eks-console-dashboard-full-access-group --username admin-chamath
-
-
-
-      RoleArn:
-        !GetAtt CRMSCodePipelineRole.Arn
