@@ -1,0 +1,152 @@
+{
+  "version": "1.0",
+  "exported_at": 1642255701,
+  "name": "coinbase-dev-bvt",
+  "description": null,
+  "trigger_url": "https://api.runscope.com/radar/3bb1efbe-5441-40d8-a6e5-83456453f7a1/trigger",
+  "steps": [
+    {
+      "step_type": "request",
+      "skipped": false,
+      "note": "HealthCheck API Test",
+      "method": "GET",
+      "args": {},
+      "data": "",
+      "headers": {},
+      "multipart_form": [],
+      "auth": {},
+      "url": "http://k8s-devcoinb-devcoinb-a201f2690b-1967513798.us-east-1.elb.amazonaws.com/coinbase-service/health-check",
+      "fragment": "",
+      "assertions": [
+        {
+          "comparison": "equal_number",
+          "source": "response_status",
+          "value": 200
+        },
+        {
+          "comparison": "equal",
+          "source": "response_json",
+          "value": "success",
+          "property": "status"
+        },
+        {
+          "comparison": "equal",
+          "source": "response_json",
+          "value": "dev",
+          "property": "data.envs.ENV"
+        }
+      ],
+      "variables": [],
+      "scripts": [],
+      "before_scripts": []
+    },
+    {
+      "step_type": "request",
+      "skipped": false,
+      "note": "Get Transaction API Test",
+      "multipart_form": [],
+      "headers": {},
+      "auth": {},
+      "method": "GET",
+      "url": "http://k8s-devcoinb-devcoinb-a201f2690b-1967513798.us-east-1.elb.amazonaws.com/coinbase-service/transaction",
+      "fragment": "",
+      "assertions": [
+        {
+          "comparison": "equal_number",
+          "source": "response_status",
+          "value": 200
+        },
+        {
+          "comparison": "not_empty",
+          "source": "response_json",
+          "value": null,
+          "property": ""
+        }
+      ],
+      "variables": [],
+      "scripts": [],
+      "before_scripts": []
+    },
+    {
+      "step_type": "request",
+      "skipped": false,
+      "note": "Post Transaction API Test",
+      "body": "{\r\n    \"coin\": \"LTC\",\r\n    \"amount\": 963.256,\r\n    \"user_id\" : 50,\r\n    \"type\" : \"SELL\"\r\n}",
+      "form": {},
+      "multipart_form": [],
+      "headers": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "auth": {},
+      "method": "POST",
+      "url": "http://k8s-devcoinb-devcoinb-a201f2690b-1967513798.us-east-1.elb.amazonaws.com/coinbase-service/transaction",
+      "fragment": "",
+      "assertions": [
+        {
+          "comparison": "equal_number",
+          "source": "response_status",
+          "value": 200
+        }
+      ],
+      "variables": [],
+      "scripts": [],
+      "before_scripts": []
+    },
+    {
+      "step_type": "request",
+      "skipped": false,
+      "note": "Get Exchange Rate API Test",
+      "multipart_form": [],
+      "headers": {},
+      "auth": {},
+      "method": "GET",
+      "url": "http://k8s-devcoinb-devcoinb-a201f2690b-1967513798.us-east-1.elb.amazonaws.com/coinbase-service/exchange-rate",
+      "fragment": "",
+      "assertions": [
+        {
+          "comparison": "equal_number",
+          "source": "response_status",
+          "value": 200
+        },
+        {
+          "comparison": "not_empty",
+          "source": "response_json",
+          "value": null,
+          "property": ""
+        }
+      ],
+      "variables": [],
+      "scripts": [],
+      "before_scripts": []
+    },
+    {
+      "step_type": "request",
+      "skipped": false,
+      "note": "Post Exchange Rate API Test",
+      "body": "{\r\n    \"coin\": \"LTC\",\r\n    \"value\": 963.256\r\n}",
+      "form": {},
+      "multipart_form": [],
+      "headers": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "auth": {},
+      "method": "POST",
+      "url": "http://k8s-devcoinb-devcoinb-a201f2690b-1967513798.us-east-1.elb.amazonaws.com/coinbase-service/exchange-rate",
+      "fragment": "",
+      "assertions": [
+        {
+          "comparison": "equal_number",
+          "source": "response_status",
+          "value": 200
+        }
+      ],
+      "variables": [],
+      "scripts": [],
+      "before_scripts": []
+    }
+  ]
+}
