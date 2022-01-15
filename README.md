@@ -1,1 +1,1 @@
-# cfts-20200998
+# cfts and kubernetes manifests -20200998
