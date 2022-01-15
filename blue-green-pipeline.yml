@@ -3,16 +3,16 @@ Description: 20200998 - CI/CD - Stack for DEV QA Prod(Blue/green) codepipeline
 Parameters:
   ArtifactStoreS3bucket:
     Description: artifact store bucket for pipeline
-    Default: codepipeline-eu-west-2-505871139202
+    Default: codepipeline-us-east-1-90441170748
     Type: String
   GithubConnectionArn:
     Description : CodeStar source connection for Github (Version 2) 
-    Default: arn:aws:codestar-connections:eu-west-2:362392363900:connection/8905a9d2-6c76-415e-a884-9d1fae385256
+    Default: arn:aws:codestar-connections:us-east-1:036710734874:connection/cd5351d0-c683-4dd6-8b24-297ab38e0ce3
     Type: String
   RepositoryId: 
     Description : The owner and name of the repository where source changes are to be detected (<account>/<repository-name>)
     Type: String
-    Default : chamathsilva/coinbase-20200998
+    Default : chamathsilva/coinbase-service-20200998
   BranchName:
     Description : The name of the branch where source changes are to be detected
     Type: String
@@ -24,7 +24,19 @@ Parameters:
   CodeBuildRole:
     Description : ARN of the CodeBuildRole Role
     Type: String
-    Default: arn:aws:iam::362392363900:role/CodeBuildKubectlRole
+    Default: arn:aws:iam::036710734874:role/CodeBuildKubectlRole
+  DevClusterName:
+    Description : dev EKS Cluster name
+    Type: String
+    Default : coinbase-cluster-iit
+  QaClusterName:
+    Description : qa EKS Cluster name
+    Type: String
+    Default : coinbase-cluster-iit
+  ProdClusterName:
+    Description : prod EKS Cluster name
+    Type: String
+    Default : coinbase-cluster-iit
 
 Resources:
   CodePipelineRole:
@@ -178,6 +190,8 @@ Resources:
             Value: 'dev'
           - Name: NAMESPACE
             Value: 'dev-coinbase-namespace'
+          - Name : CLUSTER_NAME
+            Value : !Ref DevClusterName
   QaCodeDeploy:
     Type: "AWS::CodeBuild::Project"
     Properties:
@@ -204,6 +218,8 @@ Resources:
             Value: 'qa'
           - Name: NAMESPACE
             Value: 'qa-coinbase-namespace'
+          - Name : CLUSTER_NAME
+            Value : !Ref QaClusterName
   GreenCodeDeploy:
     Type: "AWS::CodeBuild::Project"
     Properties:
@@ -230,6 +246,8 @@ Resources:
             Value: 'green'
           - Name: NAMESPACE
             Value: 'prod-coinbase-namespace'
+          - Name : CLUSTER_NAME
+            Value : !Ref ProdClusterName
   BlueGreenSwapCodeDeploy:
     Type: "AWS::CodeBuild::Project"
     Properties:
@@ -256,6 +274,8 @@ Resources:
             Value: 'blue'
           - Name: NAMESPACE
             Value: 'prod-coinbase-namespace'
+          - Name : CLUSTER_NAME
+            Value : !Ref ProdClusterName
   CodePipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -264,7 +284,7 @@ Resources:
         Type: S3
         Location: !Ref ArtifactStoreS3bucket
       RoleArn:
-        !GetAtt CRMSCodePipelineRole.Arn
+        !GetAtt CodePipelineRole.Arn
       Stages:
         - Name : Source
           Actions:
