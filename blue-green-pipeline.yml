@@ -300,7 +300,7 @@ Resources:
                 ConnectionArn: !Ref GithubConnectionArn
                 FullRepositoryId: !Ref RepositoryId
                 BranchName: !Ref BranchName
-                DetectChanges: false # todo update
+                DetectChanges: true
               RunOrder: 1
         - Name : Build
           Actions:
