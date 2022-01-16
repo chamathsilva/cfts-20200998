@@ -159,58 +159,6 @@
 				}
 			},
 			"response": []
-		},
-		{
-			"name": "blue-prod",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "k8s-prodcoin-bluecoin-f1a16468d2-1079680089.eu-west-2.elb.amazonaws.com/coinbase-service/health-check",
-					"host": [
-						"k8s-prodcoin-bluecoin-f1a16468d2-1079680089",
-						"eu-west-2",
-						"elb",
-						"amazonaws",
-						"com"
-					],
-					"path": [
-						"coinbase-service",
-						"health-check"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "green-stage",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "k8s-prodcoin-greencoi-58f566435e-1856870615.eu-west-2.elb.amazonaws.com/coinbase-service/health-check",
-					"host": [
-						"k8s-prodcoin-greencoi-58f566435e-1856870615",
-						"eu-west-2",
-						"elb",
-						"amazonaws",
-						"com"
-					],
-					"path": [
-						"coinbase-service",
-						"health-check"
-					]
-				}
-			},
-			"response": []
 		}
 	]
 }

@@ -1,0 +1,99 @@
+openapi: 3.0.0
+info:
+  title: Coinbase
+  version: 1.0.0
+servers:
+  - url: http://{{base_url}}
+tags:
+  - name: ExchangeRate
+  - name: Transaction
+paths:
+  /coinbase-service/exchange-rate:
+    get:
+      tags:
+        - ExchangeRate
+      summary: Get Exchange Rates
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    post:
+      tags:
+        - ExchangeRate
+      summary: Post Exchange Rates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                coin: LTC
+                value: 963.256
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /coinbase-service/transaction:
+    get:
+      tags:
+        - Transaction
+      summary: Get transactions
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    post:
+      tags:
+        - Transaction
+      summary: Post transaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                coin: LTC
+                amount: 963.256
+                user_id: 50
+                type: SELL
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /coinbase-service/health-check:
+    get:
+      tags:
+        - default
+      summary: health-check
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /:
+    get:
+      tags:
+        - default
+      summary: root
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+
