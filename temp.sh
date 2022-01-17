@@ -15,3 +15,5 @@ kubectl get pods -n dev-coinbase-namespace
 kubectl -n dev-coinbase-namespace logs dev-coinbase-pod-deployment-559884cf6c-4kr8w
 
 # kubectl delete namespaces qa-coinbase-namespace
+
+kubectl scale deployments/green-coinbase-pod-deployment --replicas=3 -n prod-coinbase-namespace
